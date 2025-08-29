@@ -1,0 +1,146 @@
+@model IEnumerable<BookStore1.Models.Book>
+@using System.Globalization
+
+@{
+
+    ViewData["Title"] = "Sản Phẩm";
+
+    Layout = "_Books";
+}
+@* <h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Author)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Publisher)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImageUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Author)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Publisher)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Stock)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImageUrl)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ISBN">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ISBN">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ISBN">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> *@
+<section style=" padding-top: 0">
+    <div >
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card position-relative p-4 border rounded-3">
+                        <div >
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            @if (!string.IsNullOrEmpty(item.ImageUrl))
+                            {
+                                <img src="@item.ImageUrl" class="img-fluid shadow-sm" alt="product item">
+                            }
+                            else
+                            {
+                                <img src="https://via.placeholder.com/400x600.png?text=No+Image" class="img-fluid shadow-sm" alt="product item">
+                            }
+                        }
+                        else
+                        {
+                            <img src="@Url.Content("~/images/placeholder.png")" class="img-fluid shadow-sm" alt="product item">
+                        }
+                        </div>
+                        <div class="">
+                            <h6 class="mt-4 mb-0 fw-bold"><a asp-action="Details" asp-route-id="@item.ISBN"class="product-card-image">@item.Title</a></h6>
+                            <div class="review-content d-flex">
+                                <p class="my-2 me-2 fs-6 text-black-50">@item.Author</p>
+
+                                <div class="rating text-warning d-flex align-items-center">
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                    <svg class="star star-fill">
+                                        <use xlink:href="#star-fill"></use>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <span class="price text-primary fw-bold mb-2 fs-5">@item.Price.ToString("C", new CultureInfo("en-US"))</span>
+                        <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
+                            <button type="button" href="#" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="Add to Cart">
+                                <svg class="cart">
+                                    <use xlink:href="#cart"></use>
+                                </svg>
+                            </button>
+                            <a href="#" class="btn btn-dark">
+                                <span>
+                                    <svg class="wishlist">
+                                        <use xlink:href="#heart"></use>
+                                    </svg>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

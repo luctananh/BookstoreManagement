@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace Bookstore1.Controllers
 {
@@ -56,48 +57,92 @@ namespace Bookstore1.Controllers
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync();
-            return View("Login");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            // LƯU Ý BẢO MẬT: Lưu trữ mật khẩu dạng văn bản thuần túy là rất không an toàn.
-            // Cân nhắc sử dụng thư viện băm mật khẩu như BCrypt.Net.
             var user = await _context.User
-                                     .FirstOrDefaultAsync(u => u.Username == username && u.Password == password);
+                                     .FirstOrDefaultAsync(u => u.Username == username);
 
-            if (user == null)
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
             {
-                // Thêm một thông báo lỗi để hiển thị trên trang đăng nhập.
-                ViewData["ErrorMessage"] = "Tên đăng nhập hoặc mật khẩu không hợp lệ.";
-                return View();
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.Role)
+                };
+
+                var claimsIdentity = new ClaimsIdentity(
+                    claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+
+                return RedirectToAction("Index", "Home");
             }
 
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role) 
-                // Đảm bảo rằng bạn có một claim cho vai trò nếu bạn đang sử dụng phân quyền dựa trên vai trò.
-            };
-
-            var claimsIdentity = new ClaimsIdentity(
-                claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                new ClaimsPrincipal(claimsIdentity));
-
-            return RedirectToAction("Index", "Home");
+            ViewData["ErrorMessage"] = "Tên đăng nhập hoặc mật khẩu không hợp lệ.";
+            return View();
         }
 
 
+
+                // GET: /Users/Register
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // POST: /Users/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register([Bind("Username,Password,Email")] User user)
+        {
+            if (ModelState.IsValid)
+            {
+                // Check if username already exists
+                if (await _context.User.AnyAsync(u => u.Username == user.Username))
+                {
+                    ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại.");
+                    return View(user);
+                }
+
+                // Hash the password
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+
+                // Set default role
+                user.Role = "Customer";
+
+                                                _context.Add(user);
+                await _context.SaveChangesAsync();
+
+                // Create a new Customer linked to the newly registered User
+                var customer = new Customer
+                {
+                    UserId = user.UserId,
+                    Name = user.Username, // Or prompt for full name during registration
+                    Email = user.Email,
+                    Phone = "", // Or prompt for phone number
+                    Address = "" // Or prompt for address
+                };
+                _context.Customer.Add(customer);
+                await _context.SaveChangesAsync();
+                // Redirect to login page after successful registration
+                return RedirectToAction(nameof(Login));
+            }
+
+            return View(user);
+        }
 
         // GET: Users/Create
         public IActionResult Create()
         {
             return View();
         }
+
 
         // POST: Users/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.

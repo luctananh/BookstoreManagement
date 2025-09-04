@@ -22,7 +22,8 @@ namespace Bookstore1.Controllers
         // GET: Customers
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Customer.ToListAsync());
+            var bookstore1Context = _context.Customer.Include(c => c.User);
+            return View(await bookstore1Context.ToListAsync());
         }
 
         // GET: Customers/Details/5
@@ -34,6 +35,7 @@ namespace Bookstore1.Controllers
             }
 
             var customer = await _context.Customer
+                .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.CustomerId == id);
             if (customer == null)
             {
@@ -46,6 +48,7 @@ namespace Bookstore1.Controllers
         // GET: Customers/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Password");
             return View();
         }
 
@@ -54,7 +57,7 @@ namespace Bookstore1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,Name,Email,Password,Phone,Address")] Customer customer)
+        public async Task<IActionResult> Create([Bind("CustomerId,Name,Email,UserId,Phone,Address")] Customer customer)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +65,7 @@ namespace Bookstore1.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Password", customer.UserId);
             return View(customer);
         }
 
@@ -78,6 +82,7 @@ namespace Bookstore1.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Password", customer.UserId);
             return View(customer);
         }
 
@@ -86,7 +91,7 @@ namespace Bookstore1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,Name,Email,Password,Phone,Address")] Customer customer)
+        public async Task<IActionResult> Edit(int id, [Bind("CustomerId,Name,Email,UserId,Phone,Address")] Customer customer)
         {
             if (id != customer.CustomerId)
             {
@@ -113,6 +118,7 @@ namespace Bookstore1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserId"] = new SelectList(_context.User, "UserId", "Password", customer.UserId);
             return View(customer);
         }
 
@@ -125,6 +131,7 @@ namespace Bookstore1.Controllers
             }
 
             var customer = await _context.Customer
+                .Include(c => c.User)
                 .FirstOrDefaultAsync(m => m.CustomerId == id);
             if (customer == null)
             {

@@ -1,60 +1,63 @@
-﻿@model BookStore1.Models.Book
+@model BookStore1.Models.Book
+@using System.Globalization
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Details</h1>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="main-img">
+                @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                {
+                    <img class="img-fluid" src="@Model.ImageUrl" alt="@Model.Title">
+                }
+                else
+                {
+                    <img class="img-fluid" src="https://via.placeholder.com/600x800.png?text=No+Image" alt="Placeholder Image">
+                }
+                <!-- Preview images can be added here if the model supports multiple images -->
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="main-description px-2">
+                <div class="category text-bold">
+                    Category: @Model.Category.Name
+                </div>
+                <div class="product-title text-bold my-3">
+                    @Model.Title
+                </div>
 
-<div>
-    <h4>Book</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Author)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Author)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Publisher)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Publisher)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Stock)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Stock)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageUrl)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.Name)
-        </dd>
-    </dl>
+                <div class="price-area my-4">
+                    <p class="new-price text-bold mb-1">@Model.Price.ToString("C", new CultureInfo("en-US"))</p>
+                    @if(Model.Stock <= 0) {
+                        <p class="text-danger mb-1">Hết hàng</p>
+                    }
+                </div>
+
+                <div class="buttons d-flex my-5">
+                    <div class="block">
+                        <button class="shadow btn custom-btn">Add to cart</button>
+                    </div>
+                    <div class="block quantity">
+                        <input type="number" class="form-control" id="cart_quantity" value="1" min="1" max="@Model.Stock">
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-details my-4">
+                <p class="details-title text-color mb-1">Product Details</p>
+                <p class="description">Nhà xuất bản: @Model.Publisher</p>
+            </div>
+            
+            <div class="delivery my-4">
+                <p class="font-weight-bold mb-0"><span><i class="fa-solid fa-truck"></i></span> <b>Giao hàng trong 3 ngày kể từ ngày mua</b> </p>
+                <p class="text-secondary">Đặt hàng ngay để nhận được sản phẩm này</p>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ISBN">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<!-- Similar products can be added here if there is a mechanism to fetch them -->

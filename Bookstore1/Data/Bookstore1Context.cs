@@ -54,7 +54,12 @@ namespace Bookstore1.Data
                 .WithMany(b => b.OrderDetails)
                 .HasForeignKey(od => od.ISBN)
                 .OnDelete(DeleteBehavior.Cascade);
-
+                
+            modelBuilder.Entity<Customer>()
+                .HasOne(c => c.User)
+                .WithOne(u => u.Customer)
+                .HasForeignKey<Customer>(c => c.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -15,10 +15,11 @@ namespace BookStore1.Models
         [MaxLength(255)]
         public string Password { get; set; } // Hashed
 
-        [Required]
-        public string Role { get; set; } // Ví dụ: "Admin", "Staff", "Customer"
+        public string? Role { get; set; } // Ví dụ: "Admin", "Staff", "Customer"
 
         [MaxLength(255)]
         public string Email { get; set; }
+        
+        public Customer? Customer { get; set; }
     }
 }

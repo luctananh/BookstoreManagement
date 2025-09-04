@@ -15,9 +15,7 @@ namespace BookStore1.Models
         [MaxLength(255)]
         public string Email { get; set; }
 
-        [Required]
-        [MaxLength(255)]
-        public string Password { get; set; } // Hashed
+        public int? UserId { get; set; }
 
         [MaxLength(20)]
         public string Phone { get; set; }
@@ -25,6 +23,7 @@ namespace BookStore1.Models
         public string Address { get; set; }
 
         // Navigation property
+        public User User { get; set; }
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

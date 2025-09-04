@@ -64,6 +64,7 @@ namespace Bookstore1.Controllers
         public async Task<IActionResult> Login(string username, string password)
         {
             var user = await _context.User
+                                     .Include(u => u.Customer) // Include the Customer
                                      .FirstOrDefaultAsync(u => u.Username == username);
 
             if (user != null && BCrypt.Net.BCrypt.Verify(password, user.Password))
@@ -73,6 +74,11 @@ namespace Bookstore1.Controllers
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Role, user.Role)
                 };
+
+                if (user.Customer != null)
+                {
+                    claims.Add(new Claim("CustomerId", user.Customer.CustomerId.ToString()));
+                }
 
                 var claimsIdentity = new ClaimsIdentity(
                     claims, CookieAuthenticationDefaults.AuthenticationScheme);

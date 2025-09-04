@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+@using System.Globalization
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -177,7 +178,7 @@
         <nav id="header-nav" class="navbar navbar-expand-lg py-3">
             <div class="container">
                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                    <img src="images/main-logo.png" class="logo">
+                    <img src="@Url.Content("~/images/main-logo.png")" class="logo">
                 </a>
                 <button class="navbar-toggler d-flex d-lg-none order-3 p-2" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false"
@@ -190,7 +191,7 @@
                     aria-labelledby="bdNavbarOffcanvasLabel">
                     <div class="offcanvas-header px-4 pb-0">
                         <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                            <img src="images/main-logo.png" class="logo">
+                            <img src="@Url.Content("~/images/main-logo.png")" class="logo">
                         </a>
                         <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas"
                             aria-label="Close" data-bs-target="#bdNavbar"></button>
@@ -199,21 +200,18 @@
                         <ul id="navbar"
                             class="navbar-nav text-uppercase justify-content-start justify-content-lg-center align-items-start align-items-lg-center flex-grow-1">
                             <li class="nav-item">
-                                <a class="nav-link me-4 " asp-area="" asp-controller="Home" asp-action="Index">Trang
-                                    chủ</a>
+                                <a class="nav-link me-4 " asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link me-4" asp-area="" asp-controller="Books" asp-action="Index">Sản
-                                    phẩm</a>
+                                <a class="nav-link me-4" asp-area="" asp-controller="Books" asp-action="Index">Sản phẩm</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link me-4" asp-area="" asp-controller="Promotions" asp-action="Index" ">Mã Giảm giá</a>
+                                <a class="nav-link me-4" asp-area="" asp-controller="Promotions" asp-action="Index" )">Mã Giảm giá</a>
                             </li>
 
                             <li class=" nav-item">
-                                    <a class="nav-link me-4" asp-area="" asp-controller="Orders" asp-action="Index">Đơn
-                                        hàng</a>
+                                    <a class="nav-link me-4" asp-area="" asp-controller="Orders" asp-action="Index">Đơn hàng</a>
                             </li>
                         </ul>
                         <div class="user-items d-flex">
@@ -227,6 +225,7 @@
                                 </li>
                                 @if (User.Identity.IsAuthenticated)
                                 {
+                                    var customerId = User.FindFirst("CustomerId")?.Value;
                                     <li class="dropdown pe-3">
                                         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                             <svg class="user">
@@ -235,7 +234,10 @@
                                             @User.Identity.Name
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                            <li><a class="dropdown-item" asp-controller="Customers" asp-action="Index">Trang cá nhân</a></li>
+                                            @if (customerId != null)
+                                            {
+                                                <li><a class="dropdown-item" asp-controller="Customers" asp-action="Details" asp-route-id="@customerId">Trang cá nhân</a></li>
+                                            }
                                             <li><a class="dropdown-item" asp-controller="Users" asp-action="Logout">Logout</a></li>
                                         </ul>
                                     </li>
@@ -373,7 +375,7 @@
                         <div class="col-lg-3 col-sm-6 pb-3">
                             <div class="footer-menu">
                                 <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                                    <img src="images/main-logo.png" class="logo">
+                                    <img src="@Url.Content("~/images/main-logo.png")" class="logo">
                                 </a>
                                 <p>
                                     Nisi, purus vitae, ultrices nunc. Sit ac sit suscipit hendrerit. Gravida massa
@@ -494,16 +496,18 @@
                     <div class="shipping d-flex">
                         <p>We ship with:</p>
                         <div class="card-wrap ps-2">
-                            <img src="images/dhl.png" alt="visa">
-                            <img src="images/shippingcard.png" alt="mastercard">
+                            <img src="@Url.Content("~/images/dhl.png")" alt="visa">
+                            <img src="@Url.Content("~/images/shippingcard.png")" alt="mastercard">
+
                         </div>
                     </div>
                     <div class="payment-method d-flex">
                         <p>Payment options:</p>
                         <div class="card-wrap ps-2">
-                            <img src="images/visa.jpg" alt="visa">
-                            <img src="images/mastercard.jpg" alt="mastercard">
-                            <img src="images/paypal.jpg" alt="paypal">
+                            <img src="@Url.Content("~/images/visa.jpg")" alt="visa">
+                            <img src="@Url.Content("~/images/mastercard.jpg")" alt="mastercard">
+                            <img src="@Url.Content("~/images/paypal.jpg")" alt="paypal">
+
                         </div>
                     </div>
                 </div>

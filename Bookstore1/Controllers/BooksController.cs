@@ -20,9 +20,17 @@ namespace Bookstore1.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keywworks)
         {
-            var bookstore1Context = _context.Book.Include(b => b.Category);
+            var books = from b in _context.Book
+                        select b;
+
+            if (!string.IsNullOrEmpty(keywworks))
+            {
+                books = books.Where(s => s.Title.Contains(keywworks));
+            }
+
+            var bookstore1Context = books.Include(b => b.Category);
             return View(await bookstore1Context.ToListAsync());
         }
 

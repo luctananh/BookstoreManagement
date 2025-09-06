@@ -54,6 +54,20 @@ namespace Bookstore1.Controllers
             var total = await _shoppingCartService.GetCartTotal(userId);
             return Ok(new { success = true, newTotal = total });
         }
+
+        [HttpGet("GetCartItemCount")]
+        public async Task<IActionResult> GetCartItemCount()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Ok(new { count = 0 }); // Return 0 if user is not logged in
+            }
+
+            var cart = await _shoppingCartService.GetCart(userId);
+            var count = cart?.ShoppingCartItems?.Sum(item => item.Quantity) ?? 0;
+            return Ok(new { count = count });
+        }
     }
 
     public class ShoppingCartController : Controller
@@ -108,7 +122,7 @@ namespace Bookstore1.Controllers
             }
 
             await _shoppingCartService.AddItemToCart(userId, bookId, quantity);
-            return RedirectToAction(nameof(Index));
+            return Ok(new { success = true });
         }
 
         [HttpPost]

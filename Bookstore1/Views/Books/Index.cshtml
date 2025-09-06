@@ -68,9 +68,9 @@
 
                         <span class="price text-primary fw-bold mb-2 fs-5">@item.Price.ToString("C0", new CultureInfo("vi-VN"))</span>
                         <div class="card-concern position-absolute start-0 end-0 d-flex gap-2">
-                            <form asp-controller="ShoppingCart" asp-action="AddItem" method="post">
+                            <form class="add-to-cart-form" asp-controller="ShoppingCart" asp-action="AddItem" method="post">
                                 <input type="hidden" name="bookId" value="@item.Id" />
-                                <button type="submit" class="btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top"
+                                <button type="submit" class="add-to-cart-button btn btn-dark" data-bs-toggle="tooltip" data-bs-placement="top"
                                         data-bs-title="Add to Cart">
                                     <svg class="cart">
                                         <use xlink:href="#cart"></use>
@@ -128,3 +128,52 @@
         </nav>
     </div>
 </section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+            const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]'); // Assuming there's an anti-forgery token input
+
+            addToCartForms.forEach(form => {
+                form.addEventListener('submit', async function (event) {
+                    event.preventDefault(); // Prevent default form submission
+
+                    const bookId = form.querySelector('input[name="bookId"]').value;
+                    // For Index page, quantity is usually 1 unless specified otherwise
+                    const quantity = 1; 
+
+                    const formData = new FormData();
+                    formData.append('bookId', bookId);
+                    formData.append('quantity', quantity);
+
+                    if (antiForgeryToken) {
+                        formData.append('__RequestVerificationToken', antiForgeryToken.value);
+                    }
+
+                    try {
+                        const response = await fetch('/ShoppingCart/AddItem', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            const data = await response.json();
+                            if (data.success) {
+                                alert('Sản phẩm đã được thêm vào giỏ hàng!');
+                                updateCartCountDisplay(); // Call the function to update cart count
+                            } else {
+                                alert('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+                            }
+                        } else {
+                            alert('Có lỗi xảy ra khi gửi yêu cầu.');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra: ' + error.message);
+                    }
+                });
+            });
+        });
+    </script>
+}

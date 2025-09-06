@@ -7,14 +7,12 @@
         <svg class="cart">
             <use xlink:href="#cart"></use>
         </svg>
-        <span class="fs-6 fw-light">
-            (@(Model != null && Model.ShoppingCartItems != null ? Model.ShoppingCartItems.Sum(item => item.Quantity) : 0))
-        </span>
+        <!-- Cart item count removed as per user request -->
     </a>
     <div class="dropdown-menu animate slide dropdown-menu-start dropdown-menu-lg-end p-3">
         <h4 class="d-flex justify-content-between align-items-center mb-3">
             <span class="text-primary">Your cart</span>
-            <span class="badge bg-primary rounded-pill">
+            <span id="cart-dropdown-count" class="badge bg-primary rounded-pill">
                 @(Model != null && Model.ShoppingCartItems != null ? Model.ShoppingCartItems.Sum(item => item.Quantity) : 0)
             </span>
         </h4>

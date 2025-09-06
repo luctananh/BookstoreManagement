@@ -41,6 +41,19 @@ namespace Bookstore1.Controllers
             return RedirectToAction("Index");
         }
 
+                [HttpPost]
+        public async Task<IActionResult> BuyNow(int bookId, int quantity = 1)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Users");
+            }
+
+            await _shoppingCartService.AddItemToCart(userId, bookId, quantity);
+            return RedirectToAction("Create", "Orders");
+        }
+
         [HttpPost]
         public async Task<IActionResult> RemoveItem(int bookId)
         {

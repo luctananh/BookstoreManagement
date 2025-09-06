@@ -6,58 +6,173 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style>
+    .main-img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 20px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .main-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 4px;
+    }
+    .main-description {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .category {
+        font-size: 0.9em;
+        color: #666;
+        margin-bottom: 10px;
+    }
+    .product-title {
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    .new-price {
+        font-size: 1.8em;
+        color: #007bff; /* Bootstrap primary color */
+        font-weight: bold;
+    }
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+    }
+    .quantity-selector .form-control {
+        width: 80px;
+    }
+    .buttons-container {
+        margin-top: auto; /* Pushes buttons to the bottom */
+        padding-top: 20px; /* Add some space above the buttons */
+        border-top: 1px solid #eee; /* Separator line */
+    }
+    .buttons .custom-btn {
+        background-color: #6c757d; /* Gray color */
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        vertical-align: middle;
+    }
+    .buttons .custom-btn:hover {
+        background-color: #5a6268;
+    }
+    .buttons .btn-buynow {
+        background-color: #007bff; /* Bootstrap primary color */
+    }
+    .buttons .btn-buynow:hover {
+        background-color: #0056b3;
+    }
+    .product-details, .delivery {
+        padding-bottom: 15px;
+
+    }
+    .details-title {
+        font-weight: bold;
+        color: #555;
+        margin-bottom: 10px;
+    }
+    .description {
+        line-height: 1.6;
+        color: #444;
+    }
+    .delivery p {
+        margin-bottom: 5px;
+    }
+    .delivery i {
+        margin-right: 5px;
+        color: #007bff;
+    }
+</style>
+
 <div class="container my-5">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-5">
             <div class="main-img">
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
-                    <img class="img-fluid" src="@Model.ImageUrl" alt="@Model.Title">
+                    <img src="@Model.ImageUrl" alt="@Model.Title">
                 }
                 else
                 {
-                    <img class="img-fluid" src="https://via.placeholder.com/600x800.png?text=No+Image" alt="Placeholder Image">
+                    <img src="https://via.placeholder.com/600x800.png?text=No+Image" alt="Placeholder Image">
                 }
-                <!-- Preview images can be added here if the model supports multiple images -->
             </div>
         </div>
-        <div class="col-md-5">
-            <div class="main-description px-2">
-                <div class="category text-bold">
-                    Category: @Model.Category.Name
-                </div>
-                <div class="product-title text-bold my-3">
-                    @Model.Title
-                </div>
+        <div class="col-md-7">
+            <form method="post" class="main-description h-100">
+                <input type="hidden" name="bookId" value="@Model.Id" />
 
-                <div class="price-area my-4">
-                    <p class="new-price text-bold mb-1">@Model.Price.ToString("C", new CultureInfo("en-US"))</p>
-                    @if(Model.Stock <= 0) {
-                        <p class="text-danger mb-1">Hết hàng</p>
-                    }
-                </div>
+                <div>
+                    <div class="category">@Model.Category.Name</div>
+                    <h1 class="product-title">@Model.Title</h1>
+                    <p>bởi @Model.Author</p>
 
-                <div class="buttons d-flex my-5">
-                    <div class="block">
-                        <button class="shadow btn custom-btn">Add to cart</button>
+                    <div class="price-area my-4">
+                        <p class="new-price">@Model.Price.ToString("C0", new CultureInfo("vi-VN"))</p>
+                        @if (Model.Stock > 0)
+                        {
+                            <p class="text-success mb-1">Còn hàng (@Model.Stock sản phẩm)</p>
+                        }
+                        else
+                        {
+                            <p class="text-danger mb-1">Hết hàng</p>
+                        }
                     </div>
-                    <div class="block quantity">
-                        <input type="number" class="form-control" id="cart_quantity" value="1" min="1" max="@Model.Stock">
+
+                    <div class="product-details">
+                        <p class="details-title">Mô tả sản phẩm</p>
+                        <p class="description">@Html.Raw(Model.Description)</p>
+                    </div>
+
+                    <div class="product-details">
+                        <p class="details-title">Chi tiết</p>
+                        <p><strong>Nhà xuất bản:</strong> @Model.Publisher</p>
+                    </div>
+
+                    <div class="quantity-selector">
+                        <label for="quantity_input">Số lượng:</label>
+                        <input id="quantity_input" type="number" class="form-control" name="quantity" value="1" min="1" max="@Model.Stock">
+                    </div>
+
+                    <div class="delivery mt-3">
+                        <p><i class="fa-solid fa-truck"></i><b>Giao hàng trong 3 ngày</b></p>
+                        <p class="text-secondary">Đặt hàng ngay để nhận được sản phẩm này</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="product-details my-4">
-                <p class="details-title text-color mb-1">Product Details</p>
-                <p class="description">Nhà xuất bản: @Model.Publisher</p>
-            </div>
-            
-            <div class="delivery my-4">
-                <p class="font-weight-bold mb-0"><span><i class="fa-solid fa-truck"></i></span> <b>Giao hàng trong 3 ngày kể từ ngày mua</b> </p>
-                <p class="text-secondary">Đặt hàng ngay để nhận được sản phẩm này</p>
-            </div>
+                <div class="buttons-container">
+                    <div class="buttons d-flex justify-content-end">
+                        @if (Model.Stock <= 0)
+                        {
+                            <button type="submit" class="custom-btn" asp-controller="ShoppingCart" asp-action="AddItem" disabled>Thêm vào giỏ hàng</button>
+                            <button type="submit" class="custom-btn btn-buynow ms-2" asp-controller="ShoppingCart" asp-action="BuyNow" disabled>Thanh toán</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="custom-btn" asp-controller="ShoppingCart" asp-action="AddItem">Thêm vào giỏ hàng</button>
+                            <button type="submit" class="custom-btn btn-buynow ms-2" asp-controller="ShoppingCart" asp-action="BuyNow">Thanh toán</button>
+                        }
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
-<!-- Similar products can be added here if there is a mechanism to fetch them -->

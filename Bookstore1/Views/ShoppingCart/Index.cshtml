@@ -1,73 +1,250 @@
-@model BookStore1.Models.ShoppingCart
+@model Bookstore1.Models.ShoppingCartViewModel
+@using System.Globalization
 
 @{
-    ViewData["Title"] = "Shopping Cart";
+    ViewData["Title"] = "Giỏ hàng của bạn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Your Shopping Cart</h1>
+<style>
+    .cart-container {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.07);
+    }
 
-@if (Model != null && Model.ShoppingCartItems != null && Model.ShoppingCartItems.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Book Title</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Subtotal</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.ShoppingCartItems)
-            {
-                <tr>
-                    <td>
-                        @if (!string.IsNullOrEmpty(item.Book.ImageUrl))
+    .cart-item-row {
+        border-bottom: 1px solid #dee2e6;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+        transition: opacity 0.3s ease;
+    }
+
+    .cart-item-row.removing {
+        opacity: 0;
+
+    }
+
+    .cart-item-row:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item-img {
+        width: 80px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 0.25rem;
+    }
+
+    .quantity-input {
+        width: 80px;
+    }
+
+    .cart-summary {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+    }
+
+    .sticky-summary {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 20px;
+    }
+    .delete-item-btn {
+        background: none;
+        border: none;
+        color: #dc3545;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    .text-endd {
+        display: flex;
+        justify-content: center;
+        text-align: right !important;
+    }
+</style>
+
+<div class="container my-5">
+    @Html.AntiForgeryToken()
+    @if (Model != null && Model.Items != null && Model.Items.Any())
+    {
+        <h1 class="mb-4">@ViewData["Title"]</h1>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-container">
+                    <div class="row fw-bold d-none d-md-flex pb-3 border-bottom align-items-center">
+                        <div class="col-md-1"><input type="checkbox" id="select-all-checkbox" checked /></div>
+                        <div class="col-md-5">Sản phẩm</div>
+                        <div class="col-md-2 text-center">Số lượng</div>
+                        <div class="col-md-2 text-end">Thành tiền</div>
+                    </div>
+
+                    <div id="cart-items-container">
+                        @foreach (var item in Model.Items)
                         {
-                            <img src="@item.Book.ImageUrl" alt="@item.Book.Title" style="width: 50px; height: 75px; margin-right: 10px;" />
+                            <div class="row cart-item-row align-items-center" data-book-id="@item.BookId" data-price="@item.Price">
+                                <div class="col-md-1">
+                                    <input type="checkbox" name="bookIds" value="@item.BookId" class="item-checkbox" checked />
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center">
+                                        <img src="@item.ImageUrl" alt="@item.Title" class="cart-item-img me-3" />
+                                        <div>
+                                            <h5 class="mb-1">@item.Title</h5>
+                                            <p class="text-muted mb-0">@item.Author</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <input type="number" class="form-control quantity-input mx-auto" value="@item.Quantity" min="1" data-book-id="@item.BookId" />
+                                </div>
+                                <div class="col-md-2 text-end fw-bold subtotal">
+                                    @((item.Quantity * item.Price).ToString("C0", new CultureInfo("vi-VN")))
+                                </div>
+                                <div class="col-md-2 text-endd">
+                                    <button type="button" class="delete-item-btn" data-book-id="@item.BookId">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
                         }
-                        else
-                        {
-                            <img src="~/images/placeholder.png" alt="No Image" style="width: 50px; height: 75px; margin-right: 10px;" />
-                        }
-                        @item.Book.Title
-                    </td>
-                    <td>
-                        <form asp-action="UpdateQuantity" method="post">
-                            <input type="hidden" name="bookId" value="@item.BookId" />
-                            <input type="number" name="quantity" value="@item.Quantity" min="1" onchange="this.form.submit()" />
-                        </form>
-                    </td>
-                    <td>@item.Price.ToString("C")</td>
-                    <td>@((item.Quantity * item.Price).ToString("C"))</td>
-                    <td>
-                        <form asp-action="RemoveItem" method="post">
-                            <input type="hidden" name="bookId" value="@item.BookId" />
-                            <button type="submit" class="btn btn-danger">Remove</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="3" class="text-right"><strong>Total:</strong></td>
-                <td><strong>@Model.ShoppingCartItems.Sum(item => item.Quantity * item.Price).ToString("C")</strong></td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <form asp-action="ClearCart" method="post">
-        <button type="submit" class="btn btn-warning">Clear Cart</button>
-    </form>
-}
-else
-{
-    <p>Your shopping cart is empty.</p>
-}
-
-<div>
-    <a asp-controller="Books" asp-action="Index">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="cart-summary sticky-summary">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="mb-0">Tổng tiền:</h5>
+                        <h5 class="mb-0 text-danger" id="cart-total">0 ₫</h5>
+                    </div>
+                    <div class="d-grid">
+                        <a asp-controller="Orders" asp-action="Create" class="btn btn-primary">Thanh toán</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h2>Giỏ hàng của bạn đang trống</h2>
+            <p class="text-muted">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục.</p>
+            <a asp-controller="Books" asp-action="Index" class="btn btn-primary mt-3">Bắt đầu mua sắm</a>
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const cultureInfo = 'vi-VN';
+            const currencySymbol = '₫';
+            const cartTotalElement = document.getElementById('cart-total');
+            const selectAllCheckbox = document.getElementById('select-all-checkbox');
+            const itemsContainer = document.getElementById('cart-items-container');
+
+            const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            function formatCurrency(value) {
+                return new Intl.NumberFormat(cultureInfo, { style: 'decimal' }).format(value) + ' ' + currencySymbol;
+            }
+
+            function updateCartTotal() {
+                let total = 0;
+                document.querySelectorAll('.item-checkbox:checked').forEach(checkbox => {
+                    const itemRow = checkbox.closest('.cart-item-row');
+                    const price = parseFloat(itemRow.dataset.price);
+                    const quantity = parseInt(itemRow.querySelector('.quantity-input').value);
+                    if (!isNaN(price) && !isNaN(quantity)) {
+                        total += price * quantity;
+                    }
+                });
+                if (cartTotalElement) {
+                    cartTotalElement.textContent = formatCurrency(total);
+                }
+            }
+
+            function updateSubtotal(inputElement) {
+                const itemRow = inputElement.closest('.cart-item-row');
+                const price = parseFloat(itemRow.dataset.price);
+                const quantity = parseInt(inputElement.value);
+                const subtotalElement = itemRow.querySelector('.subtotal');
+                if (!isNaN(price) && !isNaN(quantity) && subtotalElement) {
+                    subtotalElement.textContent = formatCurrency(price * quantity);
+                }
+            }
+
+            // --- Event Listeners ---
+
+            itemsContainer.addEventListener('change', function(e) {
+                if (e.target.classList.contains('quantity-input')) {
+                    const bookId = e.target.dataset.bookId;
+                    const quantity = e.target.value;
+                    updateSubtotal(e.target);
+                    updateCartTotal();
+
+                    const formData = new FormData();
+                    formData.append('bookId', bookId);
+                    formData.append('quantity', quantity);
+
+                    fetch('/api/CartApi/UpdateQuantity', {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: formData
+                    });
+                }
+
+                if (e.target.classList.contains('item-checkbox')) {
+                    updateCartTotal();
+                }
+            });
+
+            itemsContainer.addEventListener('click', function(e) {
+                const deleteBtn = e.target.closest('.delete-item-btn');
+                if (deleteBtn) {
+                    const bookId = deleteBtn.dataset.bookId;
+                    const itemRow = deleteBtn.closest('.cart-item-row');
+
+                    const formData = new FormData();
+                    formData.append('bookId', bookId);
+
+                    fetch('/api/CartApi/RemoveItem', {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': antiForgeryToken
+                        },
+                        body: formData
+                    }).then(response => response.json())
+                      .then(data => {
+                          if(data.success) {
+                              if(itemRow) {
+                                  itemRow.classList.add('removing');
+                                  itemRow.addEventListener('transitionend', () => {
+                                      itemRow.remove();
+                                      updateCartTotal(); // Update total after removal animation
+                                  });
+                              }
+                          }
+                      });
+                }
+            });
+
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function () {
+                    document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+                        checkbox.checked = selectAllCheckbox.checked;
+                    });
+                    updateCartTotal();
+                });
+            }
+
+            // Initial calculation
+            updateCartTotal();
+        });
+    </script>
+}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,18 +20,13 @@ namespace Bookstore1.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index(string keywworks)
+        public async Task<IActionResult> Index(int? pageNumber)
         {
             var books = from b in _context.Book
                         select b;
 
-            if (!string.IsNullOrEmpty(keywworks))
-            {
-                books = books.Where(s => s.Title.Contains(keywworks));
-            }
-
-            var bookstore1Context = books.Include(b => b.Category);
-            return View(await bookstore1Context.ToListAsync());
+            int pageSize = 15; // 4 rows * 5 items per row
+            return View(await PaginatedList<Book>.CreateAsync(books.Include(b => b.Category).AsNoTracking(), pageNumber ?? 1, pageSize));
         }
 
         // GET: Books/Details/5
@@ -72,23 +67,6 @@ namespace Bookstore1.Controllers
                 _context.Add(book);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "Name", book.CategoryId);
-            return View(book);
-        }
-
-        // GET: Books/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var book = await _context.Book.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
             }
             ViewData["CategoryId"] = new SelectList(_context.Category, "CategoryId", "Name", book.CategoryId);
             return View(book);

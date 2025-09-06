@@ -86,6 +86,25 @@ namespace Bookstore1.Services
             }
         }
 
+        public async Task RemoveItemsFromCart(string userIdString, int[] bookIds)
+        {
+            if (!int.TryParse(userIdString, out int userId))
+            {
+                throw new ArgumentException("Invalid User ID format.");
+            }
+            var cart = await GetCart(userIdString);
+            var itemsToRemove = cart.ShoppingCartItems.Where(item => bookIds.Contains(item.BookId)).ToList();
+
+            if (itemsToRemove.Any())
+            {
+                foreach (var item in itemsToRemove)
+                {
+                    cart.ShoppingCartItems.Remove(item);
+                }
+                await _context.SaveChangesAsync();
+            }
+        }
+
         public async Task UpdateItemQuantity(string userIdString, int bookId, int quantity)
         {
             if (!int.TryParse(userIdString, out int userId))

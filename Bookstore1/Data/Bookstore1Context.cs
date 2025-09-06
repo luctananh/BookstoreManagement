@@ -22,6 +22,8 @@ namespace Bookstore1.Data
         public DbSet<BookStore1.Models.Promotion> Promotion { get; set; } = default!;
         public DbSet<BookStore1.Models.OrderDetail> OrderDetail { get; set; } = default!;
         public DbSet<BookStore1.Models.Report> Report { get; set; } = default!;
+        public DbSet<BookStore1.Models.ShoppingCart> ShoppingCart { get; set; } = default!;
+        public DbSet<BookStore1.Models.ShoppingCartItem> ShoppingCartItem { get; set; } = default!;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Cấu hình mối quan hệ
@@ -60,6 +62,26 @@ namespace Bookstore1.Data
                 .WithOne(u => u.Customer)
                 .HasForeignKey<Customer>(c => c.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            // Shopping Cart Relationships
+            modelBuilder.Entity<ShoppingCart>()
+                .HasOne(sc => sc.User)
+                .WithMany() 
+                .HasForeignKey(sc => sc.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ShoppingCartItem>()
+                .HasOne(sci => sci.ShoppingCart)
+                .WithMany(sc => sc.ShoppingCartItems)
+                .HasForeignKey(sci => sci.ShoppingCartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<ShoppingCartItem>()
+                .HasOne(sci => sci.Book)
+                .WithMany() 
+                .HasForeignKey(sci => sci.BookId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
             base.OnModelCreating(modelBuilder);
         }
     }

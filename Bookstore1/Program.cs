@@ -3,10 +3,13 @@ using BookStore1.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Bookstore1.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<Bookstore1Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
+
+builder.Services.AddScoped<ShoppingCartService>();
 
 
 // Add services to the container.

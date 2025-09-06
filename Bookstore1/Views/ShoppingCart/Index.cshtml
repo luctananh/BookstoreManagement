@@ -1,0 +1,73 @@
+@model BookStore1.Models.ShoppingCart
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<h1>Your Shopping Cart</h1>
+
+@if (Model != null && Model.ShoppingCartItems != null && Model.ShoppingCartItems.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book Title</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ShoppingCartItems)
+            {
+                <tr>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.Book.ImageUrl))
+                        {
+                            <img src="@item.Book.ImageUrl" alt="@item.Book.Title" style="width: 50px; height: 75px; margin-right: 10px;" />
+                        }
+                        else
+                        {
+                            <img src="~/images/placeholder.png" alt="No Image" style="width: 50px; height: 75px; margin-right: 10px;" />
+                        }
+                        @item.Book.Title
+                    </td>
+                    <td>
+                        <form asp-action="UpdateQuantity" method="post">
+                            <input type="hidden" name="bookId" value="@item.BookId" />
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" onchange="this.form.submit()" />
+                        </form>
+                    </td>
+                    <td>@item.Price.ToString("C")</td>
+                    <td>@((item.Quantity * item.Price).ToString("C"))</td>
+                    <td>
+                        <form asp-action="RemoveItem" method="post">
+                            <input type="hidden" name="bookId" value="@item.BookId" />
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right"><strong>Total:</strong></td>
+                <td><strong>@Model.ShoppingCartItems.Sum(item => item.Quantity * item.Price).ToString("C")</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <form asp-action="ClearCart" method="post">
+        <button type="submit" class="btn btn-warning">Clear Cart</button>
+    </form>
+}
+else
+{
+    <p>Your shopping cart is empty.</p>
+}
+
+<div>
+    <a asp-controller="Books" asp-action="Index">Continue Shopping</a>
+</div>

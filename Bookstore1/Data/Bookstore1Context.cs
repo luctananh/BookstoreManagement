@@ -52,7 +52,7 @@ namespace Bookstore1.Data
             modelBuilder.Entity<OrderDetail>()
                 .HasOne(od => od.Book)
                 .WithMany(b => b.OrderDetails)
-                .HasForeignKey(od => od.ISBN)
+                .HasForeignKey(od => od.Id)
                 .OnDelete(DeleteBehavior.Cascade);
                 
             modelBuilder.Entity<Customer>()

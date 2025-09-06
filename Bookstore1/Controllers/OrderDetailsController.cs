@@ -57,7 +57,7 @@ namespace Bookstore1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderDetailId,OrderId,ISBN,Quantity,PricePerItem")] OrderDetail orderDetail)
+        public async Task<IActionResult> Create([Bind("OrderDetailId,OrderId,Id,Quantity,PricePerItem")] OrderDetail orderDetail)
         {
             if (ModelState.IsValid)
             {
@@ -91,7 +91,7 @@ namespace Bookstore1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderDetailId,OrderId,ISBN,Quantity,PricePerItem")] OrderDetail orderDetail)
+        public async Task<IActionResult> Edit(int id, [Bind("OrderDetailId,OrderId,Id,Quantity,PricePerItem")] OrderDetail orderDetail)
         {
             if (id != orderDetail.OrderDetailId)
             {

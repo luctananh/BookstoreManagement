@@ -10,8 +10,7 @@ namespace BookStore1.Models
 
         public int OrderId { get; set; } // FK to Order
 
-        [MaxLength(13)]
-        public string ISBN { get; set; } // FK to Book
+        public int Id { get; set; } // FK to Book
 
         public int Quantity { get; set; }
 

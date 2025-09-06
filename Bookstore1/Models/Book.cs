@@ -8,12 +8,13 @@ namespace BookStore1.Models
     public class Book
     {
         [Key]
-        [MaxLength(13)]
-        public string ISBN { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(255)]
         public string Title { get; set; }
+
+        public string Description { get; set; }
 
         [Required]
         [MaxLength(255)]

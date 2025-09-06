@@ -24,9 +24,11 @@ namespace Bookstore1.Migrations
 
             modelBuilder.Entity("BookStore1.Models.Book", b =>
                 {
-                    b.Property<string>("ISBN")
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Author")
                         .IsRequired()
@@ -35,6 +37,10 @@ namespace Bookstore1.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
@@ -55,7 +61,7 @@ namespace Bookstore1.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("ISBN");
+                    b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
@@ -165,10 +171,8 @@ namespace Bookstore1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
 
-                    b.Property<string>("ISBN")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -181,7 +185,7 @@ namespace Bookstore1.Migrations
 
                     b.HasKey("OrderDetailId");
 
-                    b.HasIndex("ISBN");
+                    b.HasIndex("Id");
 
                     b.HasIndex("OrderId");
 
@@ -322,7 +326,7 @@ namespace Bookstore1.Migrations
                 {
                     b.HasOne("BookStore1.Models.Book", "Book")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ISBN")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

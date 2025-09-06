@@ -35,7 +35,7 @@ namespace Bookstore1.Controllers
         }
 
         // GET: Books/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
             if (id == null)
             {
@@ -44,7 +44,7 @@ namespace Bookstore1.Controllers
 
             var book = await _context.Book
                 .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.ISBN == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
                 return NotFound();
@@ -65,7 +65,7 @@ namespace Bookstore1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ISBN,Title,Author,Publisher,CategoryId,Stock,Price,ImageUrl")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,Author,Publisher,CategoryId,Stock,Price,ImageUrl")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace Bookstore1.Controllers
         }
 
         // GET: Books/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (id == null)
             {
@@ -99,9 +99,9 @@ namespace Bookstore1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("ISBN,Title,Author,Publisher,CategoryId,Stock,Price,ImageUrl")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Author,Publisher,CategoryId,Stock,Price,ImageUrl")] Book book)
         {
-            if (id != book.ISBN)
+            if (id != book.Id)
             {
                 return NotFound();
             }
@@ -115,7 +115,7 @@ namespace Bookstore1.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookExists(book.ISBN))
+                    if (!BookExists(book.Id))
                     {
                         return NotFound();
                     }
@@ -131,7 +131,7 @@ namespace Bookstore1.Controllers
         }
 
         // GET: Books/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (id == null)
             {
@@ -140,7 +140,7 @@ namespace Bookstore1.Controllers
 
             var book = await _context.Book
                 .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.ISBN == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
                 return NotFound();
@@ -152,7 +152,7 @@ namespace Bookstore1.Controllers
         // POST: Books/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var book = await _context.Book.FindAsync(id);
             if (book != null)
@@ -164,9 +164,9 @@ namespace Bookstore1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool BookExists(string id)
+        private bool BookExists(int id)
         {
-            return _context.Book.Any(e => e.ISBN == id);
+            return _context.Book.Any(e => e.Id == id);
         }
     }
 }

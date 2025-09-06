@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookstore1.Migrations
 {
     [DbContext(typeof(Bookstore1Context))]
-    [Migration("20250903100411_LinkUserAndCustomer")]
-    partial class LinkUserAndCustomer
+    [Migration("20250906014654_csdl")]
+    partial class csdl
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,9 +27,11 @@ namespace Bookstore1.Migrations
 
             modelBuilder.Entity("BookStore1.Models.Book", b =>
                 {
-                    b.Property<string>("ISBN")
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Author")
                         .IsRequired()
@@ -38,6 +40,10 @@ namespace Bookstore1.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
@@ -58,7 +64,7 @@ namespace Bookstore1.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.HasKey("ISBN");
+                    b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
@@ -168,10 +174,8 @@ namespace Bookstore1.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
 
-                    b.Property<string>("ISBN")
-                        .IsRequired()
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
@@ -184,7 +188,7 @@ namespace Bookstore1.Migrations
 
                     b.HasKey("OrderDetailId");
 
-                    b.HasIndex("ISBN");
+                    b.HasIndex("Id");
 
                     b.HasIndex("OrderId");
 
@@ -270,7 +274,6 @@ namespace Bookstore1.Migrations
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Role")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Username")
@@ -326,7 +329,7 @@ namespace Bookstore1.Migrations
                 {
                     b.HasOne("BookStore1.Models.Book", "Book")
                         .WithMany("OrderDetails")
-                        .HasForeignKey("ISBN")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -368,8 +371,7 @@ namespace Bookstore1.Migrations
 
             modelBuilder.Entity("BookStore1.Models.User", b =>
                 {
-                    b.Navigation("Customer")
-                        .IsRequired();
+                    b.Navigation("Customer");
                 });
 #pragma warning restore 612, 618
         }
